@@ -1,43 +1,44 @@
-# 🧭 PropRadar – Personal Listing Organizer (Prototype)
+# 🧭 PropRadar – Personal Listing Dashboard (Prototype)
 
-PropRadar is an early-stage browser extension prototype designed to help users
-collect and organize **their own saved listings** in a personal database.
+PropRadar is an early-stage browser extension prototype designed to help individuals
+collect and manage **their own published listings** in a single, personal workspace.
 
-Rather than influencing decisions or external users, the project focuses on
-**personal data organization and workflow convenience**.
+The project focuses on simplifying the management of listings that already belong
+to the individual, rather than discovering, influencing, or analyzing third-party content.
 
 ---
 
 ## 🎯 Purpose
 
-The main goal of PropRadar is to allow users to:
-- Collect listings they personally interact with
-- Store structured listing data in a private database
-- Review and manage listings from a single, unified interface
+PropRadar aims to provide a unified view for individuals who:
+- Publish listings across different platforms
+- Want to gather their own listing data in one place
+- Need a simple way to review, track, and organize their active listings
 
-This project explores how browser extensions can support **personal data ownership**
-and self-managed workflows.
+This project explores how browser extensions can support **personal content ownership**
+and management workflows.
 
 ---
 
 ## 🧠 What This Project Focuses On
 
 - Browser extension architecture
-- Capturing user-initiated page data
-- Local or personal database modeling
-- Separation of UI, logic, and data layers
-- Early-stage product validation and feasibility
+- User-initiated data collection for owned content
+- Personal data modeling and organization
+- Clean separation between UI, logic, and data layers
+- MVP-driven product exploration
 
 ---
 
 ## 🚧 Project Status
 
 **Status:** Prototype / Incomplete  
-- The extension is **not fully functional**
-- Core ideas and architecture were explored
-- Development was paused before production completion
 
-This repository represents an **exploratory MVP**, not a finished product.
+- The extension is **not fully functional**
+- Core architectural ideas were implemented
+- Development was paused before production readiness
+
+This repository represents an exploratory MVP rather than a finished product.
 
 ---
 
@@ -45,16 +46,16 @@ This repository represents an **exploratory MVP**, not a finished product.
 
 - JavaScript (Browser Extension APIs)
 - Modular frontend architecture
-- Personal data modeling concepts
-- MVP-driven product exploration
+- Personal data organization concepts
+- Early-stage product validation
 
 ---
 
 ## 📌 Notes
 
 This project is shared publicly to demonstrate:
-- Product-oriented engineering thinking
-- Ethical and user-centric data handling
-- Early-stage system design decisions
+- Product-oriented engineering mindset
+- Ethical handling of owned content
+- Early-stage system design and prototyping
 
-Not intended for production or public deployment.
+Not intended for production deployment.
