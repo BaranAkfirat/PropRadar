@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "Prop Radar",
+    "version": "1.0",
+    "description": "Real Estate Data Extractor",
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "tabs"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.sahibinden.com/*"],
+            "js": ["content.js"]
+        }
+    ]
+}
