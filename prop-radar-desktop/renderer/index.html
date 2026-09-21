@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prop Radar Controller</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Prop Radar</h1>
+            <div class="status-badge">
+                <span class="indicator disconnected" id="connectionDot"></span>
+                <span id="statusText">Waiting for Extension...</span>
+            </div>
+        </header>
+
+        <section class="controls">
+            <!-- Eklenti bağlanana kadar butonlar kapalı (disabled) kalır -->
+            <button id="startBtn" class="btn btn-primary" disabled>Start Extraction</button>
+            <button id="stopBtn" class="btn btn-danger" disabled>Stop & Save Excel</button>
+        </section>
+
+        <section class="logs-section">
+            <h3>System Logs</h3>
+            <div id="logConsole" class="log-console">
+                <div class="log-entry system">[System] Application initialized. Waiting for WebSocket connection...</div>
+            </div>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

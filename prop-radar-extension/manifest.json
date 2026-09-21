@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Prop Radar Worker",
+    "version": "1.0",
+    "description": "Desktop Application Integration worker.",
+    "permissions": ["tabs", "scripting", "activeTab", "alarms"],
+    "host_permissions": ["*://*.sahibinden.com/*"],
+    "background": {
+        "service_worker": "background/serviceWorker.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.sahibinden.com/*"],
+            "js": ["content/content.js"]
+        }
+    ]
+}
