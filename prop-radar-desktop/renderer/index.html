@@ -2,31 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prop Radar Controller</title>
+    <title>Prop Radar - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Prop Radar</h1>
-            <div class="status-badge">
-                <span class="indicator disconnected" id="connectionDot"></span>
-                <span id="statusText">Waiting for Extension...</span>
+    <div class="app-container">
+        <!-- ÜST BÖLÜM: Kontroller -->
+        <header class="top-bar">
+            <div class="brand">
+                <h1>Prop Radar</h1>
+                <div class="status-badge">
+                    <span class="indicator disconnected" id="connectionDot"></span>
+                    <span id="statusText">Bağlantı Bekleniyor...</span>
+                </div>
             </div>
+            
+            <div class="controls">
+                <button id="startBtn" class="btn btn-primary" disabled>Taramayı Başlat</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>Durdur & Excel'e Kaydet</button>
+            </div>
+            
+            <!-- Kısa sistem mesajları için mini log ekranı -->
+            <div id="miniLog" class="mini-log">Sistem hazır. Eklenti bekleniyor...</div>
         </header>
 
-        <section class="controls">
-            <!-- Eklenti bağlanana kadar butonlar kapalı (disabled) kalır -->
-            <button id="startBtn" class="btn btn-primary" disabled>Start Extraction</button>
-            <button id="stopBtn" class="btn btn-danger" disabled>Stop & Save Excel</button>
-        </section>
-
-        <section class="logs-section">
-            <h3>System Logs</h3>
-            <div id="logConsole" class="log-console">
-                <div class="log-entry system">[System] Application initialized. Waiting for WebSocket connection...</div>
-            </div>
-        </section>
+        <!-- ALT BÖLÜM: İlan Tablosu -->
+        <main class="table-container">
+            <table id="listingsTable">
+                <thead>
+                    <tr>
+                        <th width="80">Görsel</th>
+                        <th>İlan Başlığı</th>
+                        <th width="120">Fiyat</th>
+                        <th width="120">Emlak Tipi</th>
+                        <th width="80">Oda</th>
+                        <th width="150">Satıcı</th>
+                        <th width="150">Telefon</th>
+                    </tr>
+                </thead>
+                <tbody id="listingsBody">
+                    <!-- Gelen veriler buraya satır satır eklenecek -->
+                </tbody>
+            </table>
+        </main>
     </div>
     <script src="app.js"></script>
 </body>

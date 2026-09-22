@@ -9,8 +9,8 @@ let extractedData = [];
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 450,
-        height: 600,
+        width: 1280,
+        height: 720,
         webPreferences: {
             nodeIntegration: true, 
             contextIsolation: false
@@ -18,6 +18,9 @@ function createWindow() {
         autoHideMenuBar: true, 
         title: "Prop Radar - Control Panel"
     });
+    
+    // Uygulamayı başlatıldığında tam ekran (maximize) yap
+    mainWindow.maximize(); 
     mainWindow.loadFile('renderer/index.html');
 }
 

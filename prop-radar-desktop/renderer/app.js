@@ -4,65 +4,104 @@ const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const statusText = document.getElementById('statusText');
 const connectionDot = document.getElementById('connectionDot');
-const logConsole = document.getElementById('logConsole');
+const miniLog = document.getElementById('miniLog');
+const listingsBody = document.getElementById('listingsBody');
 
-// Terminal ekranına yeni satır ekleyen yardımcı fonksiyon
-function addLog(message, type = 'system') {
-    const time = new Date().toLocaleTimeString();
-    const entry = document.createElement('div');
-    entry.className = `log-entry ${type}`;
-    entry.innerText = `[${time}] ${message}`;
-    logConsole.appendChild(entry);
-    
-    // Her yeni log geldiğinde scroll'u en aşağıya kaydır
-    logConsole.scrollTop = logConsole.scrollHeight;
+// Gelen verileri geçici olarak arayüzde tutacağımız dizi (Detay sayfası için gerekli olacak)
+let appStateListings = []; 
+
+function updateLog(message, isError = false) {
+    miniLog.innerText = message;
+    miniLog.style.color = isError ? '#ff5252' : '#8bc34a';
 }
 
-// 1. Buton Tıklamalarını Yakala ve Backend'e Gönder
 startBtn.addEventListener('click', () => {
     ipcRenderer.send('ui-command', 'START_SCAN');
     startBtn.disabled = true;
     stopBtn.disabled = false;
-    addLog('Sending START command to connected extension...', 'system');
+    listingsBody.innerHTML = ''; // Yeni taramada tabloyu temizle
+    appStateListings = [];
+    updateLog('Tarama başlatıldı. İlanlar bekleniyor...');
 });
 
 stopBtn.addEventListener('click', () => {
     ipcRenderer.send('ui-command', 'STOP_SCAN');
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    addLog('Sending STOP command. Finalizing queue...', 'system');
+    updateLog('Durdurma sinyali gönderildi.');
 });
 
-// 2. Backend'den (main.js) Gelen Bağlantı Durumu Değişikliklerini Dinle
 ipcRenderer.on('ws-status', (event, { isConnected, clientCount }) => {
     if (isConnected) {
-        statusText.innerText = `Connected (${clientCount} Extension)`;
+        statusText.innerText = `Bağlı (${clientCount})`;
         connectionDot.className = 'indicator connected';
-        startBtn.disabled = false; // Eklenti bağlandı, butonu aç
-        addLog(`Extension successfully connected via WebSocket.`, 'system');
+        startBtn.disabled = false;
+        updateLog('Eklenti bağlandı. Hazır.');
     } else {
-        statusText.innerText = 'Disconnected';
+        statusText.innerText = 'Bağlantı Koptu';
         connectionDot.className = 'indicator disconnected';
         startBtn.disabled = true;
         stopBtn.disabled = true;
-        addLog(`Extension disconnected. Waiting for connection...`, 'error');
+        updateLog('Eklenti bağlantısı bekleniyor...', true);
     }
 });
 
-// 3. Eklentiden Gelen Anlık Verileri Ekrana Bas
+// Arka plandan mesaj/veri geldiğinde
 ipcRenderer.on('ws-message', (event, data) => {
     if (data.type === "LOG") {
-        addLog(data.message, 'system');
-    } else if (data.type === "DATA") {
-        addLog(`Extracted: ${data.payload.title} | ${data.payload.price}`, 'data');
+        updateLog(data.message);
+    } else if (data.type === "DATA" && data.payload) {
+        addListingToTable(data.payload);
     }
 });
 
-// 4. Komutlara Verilen Yanıtları Dinle (Hata kontrolü)
 ipcRenderer.on('ui-command-reply', (event, response) => {
-    if (!response.success) {
-        addLog(`Error: ${response.message}`, 'error');
-        startBtn.disabled = false; // Hata olduysa başlat butonunu tekrar aktif et
+    updateLog(response.message, !response.success);
+    if (!response.success || response.message.includes('durdu')) {
+        startBtn.disabled = false;
         stopBtn.disabled = true;
     }
 });
+
+// Gelen ilanı tabloya ekleyen fonksiyon
+function addListingToTable(item) {
+    appStateListings.push(item);
+    
+    // Fotoğraflar virgülle ayrılmış string olarak geliyor, ilkini alıyoruz
+    let firstPhoto = '';
+    if (item.photos && item.photos !== 'N/A') {
+        firstPhoto = item.photos.split(',')[0].trim();
+    }
+
+    const tr = document.createElement('tr');
+    
+    // Görsel Sütunu
+    const tdImg = document.createElement('td');
+    if (firstPhoto) {
+        tdImg.innerHTML = `<img src="${firstPhoto}" class="thumb-img" alt="thumb">`;
+    } else {
+        tdImg.innerHTML = `<div class="empty-thumb">Yok</div>`;
+    }
+
+    tr.innerHTML = `
+        <td>${item.title}</td>
+        <td style="font-weight: bold; color: #4CAF50;">${item.price}</td>
+        <td>${item.emlakTipi}</td>
+        <td>${item.odaSayisi}</td>
+        <td>${item.sellerName} <br><small style="color:#888;">${item.kimden}</small></td>
+        <td>${item.phone}</td>
+    `;
+    
+    tr.prepend(tdImg);
+
+    // Satıra tıklandığında detay sayfasını açmak için (Bir sonraki adımda içini dolduracağız)
+    tr.addEventListener('click', () => {
+        console.log("Seçilen İlan:", item);
+        // openDetailPage(item); 
+    });
+
+    listingsBody.appendChild(tr);
+    
+    // Yeni veri eklendikçe tabloyu en aşağı kaydır
+    document.querySelector('.table-container').scrollTop = document.querySelector('.table-container').scrollHeight;
+}

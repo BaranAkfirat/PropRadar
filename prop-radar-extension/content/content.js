@@ -41,29 +41,67 @@ class PageAnalyzer {
             .map(img => img.dataset.src || img.src)
             .filter(url => url && !url.includes('blank'));
 
-        // YENİ: Telefon Numarasını Çekme Mantığı
+        // 1. Telefon Numarası
         let phone = 'Bulunamadı';
-        
-        // 1. Öncelik: Senin keşfettiğin data-opened attribute'u
         const phoneEl = document.querySelector('[data-opened]');
         if (phoneEl && phoneEl.dataset.opened) {
             phone = phoneEl.dataset.opened;
-        } 
-        // 2. Öncelik (Yedek): Bazen kurumsal mağazalarda doğrudan 'tel:' linki verilir
-        else {
+        } else {
             const telLink = document.querySelector('a[href^="tel:"]');
-            if (telLink) {
-                phone = telLink.getAttribute('href').replace('tel:', '').trim();
+            if (telLink) phone = telLink.getAttribute('href').replace('tel:', '').trim();
+        }
+
+        // 2. Satıcı İsmi
+        let sellerName = 'Bulunamadı';
+        const userSpan = document.querySelector('.username-info-area h5 span');
+        if (userSpan) {
+            const content = getComputedStyle(userSpan, '::before').getPropertyValue('content');
+            if (content && content !== 'none') {
+                sellerName = content.replace(/^["']|["']$/g, ''); 
+            } else {
+                const h5 = document.querySelector('.username-info-area h5');
+                if (h5) sellerName = h5.innerText.trim();
             }
         }
 
+        // 3. İlan Özelliklerini <dt> ve <dd> Etiketlerinden Ayrıştırma
+        const features = {};
+        const infoItems = document.querySelectorAll('.classifiedInfoItem');
+        infoItems.forEach(item => {
+            const keyEl = item.querySelector('dt');
+            const valEl = item.querySelector('dd');
+            if (keyEl && valEl) {
+                // Etiketlerin içindeki boşlukları ve enter karakterlerini temizleyip tek satır yapıyoruz
+                const key = keyEl.innerText.replace(/\s+/g, ' ').trim();
+                const val = valEl.innerText.replace(/\s+/g, ' ').trim();
+                features[key] = val;
+            }
+        });
+
+        // 4. Veriyi Paketleme (Değerler features objesinden eşleşiyor)
         const data = {
             url: window.location.href,
             title: titleEl ? titleEl.innerText.trim() : 'N/A',
             price: priceEl ? priceEl.innerText.trim() : 'N/A',
-            phone: phone, // TELEFON EKLENDİ
+            phone: phone,
+            sellerName: sellerName,
             description: descEl ? descEl.innerText.replace(/\s+/g, ' ').trim() : 'N/A',
-            photos: photosArray.length > 0 ? photosArray.join(', ') : 'N/A'
+            photos: photosArray.length > 0 ? photosArray.join(', ') : 'N/A',
+            
+            // Özellikler Tablosu (Sayfada yoksa veya boşsa 'N/A' döner)
+            ilanNo: features['İlan No'] || 'N/A',
+            ilanTarihi: features['İlan Tarihi'] || 'N/A',
+            emlakTipi: features['Emlak Tipi'] || 'N/A',
+            m2Net: features['m² (Net)'] || 'N/A',
+            odaSayisi: features['Oda Sayısı'] || 'N/A',
+            binaYasi: features['Bina Yaşı'] || 'N/A',
+            katSayisi: features['Kat Sayısı'] || 'N/A',
+            bulunduguKat: features['Bulunduğu Kat'] || 'N/A',
+            aidat: features['Aidat (TL)'] || 'N/A',
+            siteAdi: features['Site Adı'] || 'N/A',
+            esyali: features['Eşyalı'] || 'N/A',
+            depozito: features['Depozito (TL)'] || 'N/A',
+            kimden: features['Kimden'] || 'N/A'
         };
 
         chrome.runtime.sendMessage({ action: "DATA_EXTRACTED", data: data });
