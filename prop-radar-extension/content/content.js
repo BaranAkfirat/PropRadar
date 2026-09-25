@@ -78,6 +78,18 @@ class PageAnalyzer {
             }
         });
 
+        // YENİ: Script içinden konum verilerini Regex ile yakalama
+        let city = 'N/A', town = 'N/A', quarter = 'N/A';
+        const pageHTML = document.documentElement.innerHTML;
+        
+        const cityMatch = pageHTML.match(/'cityName':\s*'([^']+)'/);
+        const townMatch = pageHTML.match(/'townName':\s*'([^']+)'/);
+        const quarterMatch = pageHTML.match(/'quarterName':\s*'([^']+)'/);
+
+        if (cityMatch) city = cityMatch[1];
+        if (townMatch) town = townMatch[1];
+        if (quarterMatch) quarter = quarterMatch[1];
+
         // 4. Veriyi Paketleme (Değerler features objesinden eşleşiyor)
         const data = {
             url: window.location.href,
@@ -87,6 +99,9 @@ class PageAnalyzer {
             sellerName: sellerName,
             description: descEl ? descEl.innerText.replace(/\s+/g, ' ').trim() : 'N/A',
             photos: photosArray.length > 0 ? photosArray.join(', ') : 'N/A',
+            locationCity: city,
+            locationTown: town,
+            locationQuarter: quarter,
             
             // Özellikler Tablosu (Sayfada yoksa veya boşsa 'N/A' döner)
             ilanNo: features['İlan No'] || 'N/A',

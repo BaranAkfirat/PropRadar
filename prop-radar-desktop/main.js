@@ -47,24 +47,23 @@ app.whenReady().then(() => {
     });
 });
 
-ipcMain.on('ui-command', async (event, command) => { // async EKLENDİ
+ipcMain.on('ui-command', async (event, command) => { 
     
     if (command === 'START_SCAN') {
         extractedData = []; 
         const success = wsServer.sendCommandToExtension({ action: 'START_SCAN' });
-        
-        event.reply('ui-command-reply', { 
-            success: success, 
-            message: success ? 'Tarama başlatıldı!' : 'Hata: Tarayıcıda eklenti aktif değil!' 
-        });
+        event.reply('ui-command-reply', { success: success, message: success ? 'Tarama başlatıldı!' : 'Hata!' });
     } 
     
+    // YENİ: Sadece durdurur, eklentiye emri yollar.
     else if (command === 'STOP_SCAN') {
         wsServer.sendCommandToExtension({ action: 'STOP_SCAN' });
+        event.reply('ui-command-reply', { success: true, message: 'Tarama durduruldu.' });
+    }
 
+    // YENİ: Sadece hafızadaki (extractedData) verileri dışa aktarır.
+    else if (command === 'EXPORT_EXCEL') {
         if (extractedData.length > 0) {
-            
-            // KULLANICIYA KAYDETME PENCERESİ AÇIYORUZ
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
                 title: 'İlan Verilerini Kaydet',
@@ -76,29 +75,16 @@ ipcMain.on('ui-command', async (event, command) => { // async EKLENDİ
                 const exporter = new ExcelExporter();
                 exporter.saveToFile(extractedData, filePath)
                     .then(() => {
-                        event.reply('ui-command-reply', { 
-                            success: true, 
-                            message: `İşlem durduruldu. ${extractedData.length} ilan Excel'e kaydedildi:\n${filePath}` 
-                        });
+                        event.reply('ui-command-reply', { success: true, message: `Excel başarıyla oluşturuldu: ${filePath}` });
                     })
                     .catch(err => {
-                        event.reply('ui-command-reply', { 
-                            success: false, 
-                            message: `Excel kaydetme hatası: ${err.message}` 
-                        });
+                        event.reply('ui-command-reply', { success: false, message: `Hata: ${err.message}` });
                     });
             } else {
-                event.reply('ui-command-reply', { 
-                    success: true, 
-                    message: 'Kullanıcı kaydetmeyi iptal etti. İşlem durduruldu.' 
-                });
+                event.reply('ui-command-reply', { success: true, message: 'Excel aktarımı iptal edildi.' });
             }
-
         } else {
-            event.reply('ui-command-reply', { 
-                success: true, 
-                message: 'İşlem durduruldu ancak kaydedilecek ilan bulunamadı.' 
-            });
+            event.reply('ui-command-reply', { success: false, message: 'Dışa aktarılacak veri bulunamadı.' });
         }
     }
 });

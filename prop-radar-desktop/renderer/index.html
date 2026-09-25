@@ -7,7 +7,8 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- ÜST BÖLÜM: Kontroller -->
+        
+        <!-- ÜST KONTROL PANELİ -->
         <header class="top-bar">
             <div class="brand">
                 <h1>Prop Radar</h1>
@@ -19,32 +20,76 @@
             
             <div class="controls">
                 <button id="startBtn" class="btn btn-primary" disabled>Taramayı Başlat</button>
-                <button id="stopBtn" class="btn btn-danger" disabled>Durdur & Excel'e Kaydet</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>Taramayı Durdur</button>
+                <button id="exportBtn" class="btn btn-success" disabled>Excel'e Aktar</button>
             </div>
             
-            <!-- Kısa sistem mesajları için mini log ekranı -->
             <div id="miniLog" class="mini-log">Sistem hazır. Eklenti bekleniyor...</div>
         </header>
 
-        <!-- ALT BÖLÜM: İlan Tablosu -->
-        <main class="table-container">
+        <!-- 1. GÖRÜNÜM: ANA TABLO (Başlangıçta Açık) -->
+        <main class="view-container" id="mainView">
+            <!-- YENİ: Arama Çubuğu -->
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="İlan başlığı, satıcı, telefon veya özellik ara...">
+            </div>
+
             <table id="listingsTable">
                 <thead>
                     <tr>
                         <th width="80">Görsel</th>
-                        <th>İlan Başlığı</th>
-                        <th width="120">Fiyat</th>
-                        <th width="120">Emlak Tipi</th>
-                        <th width="80">Oda</th>
-                        <th width="150">Satıcı</th>
-                        <th width="150">Telefon</th>
+                        <th width="110">Platform</th>
+                        <th width="110" class="sortable">İlan Tarihi <span>↕</span></th>
+                        <th class="sortable">İlan Başlığı <span>↕</span></th>
+                        <th width="110" class="sortable">Fiyat <span>↕</span></th>
+                        <th width="110" class="sortable">Emlak Tipi <span>↕</span></th>
+                        <th width="80" class="sortable">Oda <span>↕</span></th>
+                        <th width="130" class="sortable">Konum <span>↕</span></th> <!-- YENİ SÜTUN -->
+                        <th width="120">Satıcı</th>
+                        <th width="120">Telefon</th>
                     </tr>
                 </thead>
                 <tbody id="listingsBody">
-                    <!-- Gelen veriler buraya satır satır eklenecek -->
+                    <!-- İlanlar buraya gelecek -->
                 </tbody>
             </table>
         </main>
+
+        <!-- İLAN DETAY SAYFASI (Güncellendi) -->
+        <main class="view-container detail-view" id="detailView" style="display: none;">
+            <div class="detail-header">
+                <button id="backBtn" class="btn btn-secondary">← Geri Dön</button>
+                <h2 id="detailTitle">İlan Başlığı</h2>
+                <h2 id="detailPrice" class="detail-price">Fiyat</h2>
+                <!-- YENİ: İlana Git Butonu -->
+                <button id="openUrlBtn" class="btn btn-primary" style="margin-left: 15px;">↗ İlana Git</button>
+            </div>
+            
+            <div class="detail-content">
+                <!-- Sol Taraf: Fotoğraf Galerisi -->
+                <div class="detail-gallery" id="detailGallery">
+                    <!-- Fotoğraflar buraya dizilecek -->
+                </div>
+                
+                <!-- Sağ Taraf: Özellikler ve Açıklama -->
+                <div class="detail-info">
+                    
+                    <div class="info-card">
+                        <h3>İlan Özellikleri</h3>
+                        <div class="features-grid" id="detailFeatures">
+                            <!-- Özellikler buraya gelecek -->
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Açıklama</h3>
+                        <div class="detail-desc" id="detailDesc">Açıklama metni...</div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+
     </div>
     <script src="app.js"></script>
 </body>
