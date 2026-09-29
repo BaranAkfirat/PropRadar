@@ -4,13 +4,19 @@
     "version": "1.0",
     "description": "Desktop Application Integration worker.",
     "permissions": ["tabs", "scripting", "activeTab", "alarms"],
-    "host_permissions": ["*://*.sahibinden.com/*"],
+    "host_permissions": [
+        "*://*.sahibinden.com/*",
+        "*://*.hepsiemlak.com/*"
+    ],
     "background": {
         "service_worker": "background/serviceWorker.js"
     },
     "content_scripts": [
         {
-            "matches": ["*://*.sahibinden.com/*"],
+            "matches": [
+                "*://*.sahibinden.com/*",
+                "*://*.hepsiemlak.com/*"
+            ],
             "js": ["content/content.js"]
         }
     ]
