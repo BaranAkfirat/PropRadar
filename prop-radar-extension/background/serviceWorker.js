@@ -2,6 +2,7 @@ let socket = null;
 let queue = [];
 let isPaused = false;
 let currentTabId = null;
+let processedTabCount = 0; // Şişmeyi ve banlanmayı engellemek için sayaç
 
 function connectWebSocket() {
     // Zaten bağlıysa veya şu an bağlanmaya çalışıyorsa işlemi iptal et
@@ -59,12 +60,41 @@ async function processNextInQueue() {
         return;
     }
 
-    const nextUrl = queue.shift();
-    const delay = Math.floor(Math.random() * 2000) + 2000;
+    processedTabCount++;
+    
+    // YORULMA MANTIĞI: Her 15 sekmede bir 45 saniyelik uzun mola (Hem banı hem RAM şişmesini engeller)
+    if (processedTabCount % 15 === 0) {
+        if (socket?.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: "LOG", message: "Sistem dinleniyor... Anti-bot molası (45 sn)." }));
+        }
+        await new Promise(resolve => setTimeout(resolve, 45000));
+    }
+
+    const nextUrl = queue.shift(); // Diziden çıkararak oku (RAM'i rahatlat)
+    
+    // RASTGELE BEKLEME: 4 ile 9 saniye arası rastgele (İnsan davranışı)
+    const delay = Math.floor(Math.random() * 5000) + 4000;
     await new Promise(resolve => setTimeout(resolve, delay));
 
     chrome.tabs.create({ url: nextUrl, active: true }, (tab) => {
         currentTabId = tab.id;
+        
+        // GÜVENLİK SİGORTASI: Eğer bir sekme açılır ama veri çekilemezse (hata verirse), 
+        // 15 saniye sonra sekme zorla kapatılsın ve diğerine geçilsin. (ŞİŞMEYİ KESİN ENGELLER)
+        setTimeout(() => {
+            if (currentTabId === tab.id && !isPaused) {
+                chrome.tabs.get(tab.id, (t) => {
+                    if (!chrome.runtime.lastError && t) {
+                        if (socket?.readyState === WebSocket.OPEN) {
+                            socket.send(JSON.stringify({ type: "LOG", message: "Sekme zaman aşımı! Atlanıyor..." }));
+                        }
+                        chrome.tabs.remove(tab.id, () => {
+                            processNextInQueue();
+                        });
+                    }
+                });
+            }
+        }, 15000); // 15 Saniyelik sigorta
     });
 }
 

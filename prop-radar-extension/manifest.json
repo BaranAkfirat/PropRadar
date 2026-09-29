@@ -17,7 +17,11 @@
                 "*://*.sahibinden.com/*",
                 "*://*.hepsiemlak.com/*"
             ],
-            "js": ["content/content.js"]
+            "js": [
+                "content/sahibinden.js",
+                "content/hepsiemlak.js",
+                "content/content.js"
+            ]
         }
     ]
 }
