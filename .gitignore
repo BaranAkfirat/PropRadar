@@ -2,3 +2,5 @@ node_modules/
 package-lock.json
 package.json
 build_output/
+icon.ico
+twilio-test/

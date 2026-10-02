@@ -358,3 +358,218 @@ tbody tr:last-child td { border-bottom: none; }
 ::-webkit-scrollbar-track { background: var(--bg-main); }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+/* --- YENİ EKLENEN FORM VE FİLTRE STİLLERİ --- */
+.filter-panel {
+    margin-bottom: 24px;
+}
+
+.filter-controls {
+    display: flex; 
+    gap: 16px; 
+    align-items: flex-end; 
+    flex-wrap: wrap;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-select {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    min-width: 200px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: auto;
+}
+
+.form-select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-surface-hover);
+}
+
+.table-container {
+    max-height: calc(100vh - 350px);
+    overflow-y: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+/* --- SAĞ PANEL VE BUTON --- */
+.right-panel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-scroll {
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-scroll:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* --- 3D KÜP SAHNESİ --- */
+.cube-scene {
+    flex: 1;
+    height: 42px; /* Butonlarla aynı yükseklik */
+    perspective: 1000px;
+    margin: 0 30px;
+}
+
+.cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: translateZ(-21px); /* Yüksekliğin yarısı */
+}
+
+/* Scroll tuşuna basıldığında eklenecek class */
+.cube.show-browser {
+    transform: translateZ(-21px) rotateX(90deg);
+}
+
+.cube-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+}
+
+/* Ön Yüz (Taramayı Başlat vb.) */
+.cube-front {
+    transform: rotateX(0deg) translateZ(21px);
+}
+
+/* Alt Yüz (Tarayıcı Filtreleri - 90 derece dönük bekliyor) */
+.cube-bottom {
+    transform: rotateX(-90deg) translateZ(21px);
+}
+
+/* --- YENİ KOMPAKT FİLTRE TASARIMI --- */
+.filter-controls-inline {
+    display: flex;
+    gap: 8px;
+    align-items: center; /* Tüm elemanları dikeyde mükemmel ortalar */
+    background: var(--bg-main);
+    padding: 6px 16px;
+    border-radius: 24px;
+    border: 1px dashed var(--border-color);
+    width: max-content; /* Kutu boyutunu içerik kadar sabitler */
+}
+
+.form-select-sm {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: none;
+    border-right: 1px solid var(--border-color);
+    padding: 4px 12px 4px 4px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    
+    /* --- BÜYÜYÜP KÜÇÜLMEYİ ÖNLEYEN SABİT BOYUT AYARLARI --- */
+    width: 130px; /* Genişliği kalıcı olarak sabitledik */
+    text-overflow: ellipsis; /* Sığmayan uzun yazının (örn: Turistik Günlük Kiralık) sonuna ... koyar */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.form-select-sm:last-of-type { 
+    border-right: none; 
+}
+.form-select-sm option { 
+    background-color: var(--bg-surface); 
+}
+
+/* --- BUTON İÇİN SABİT BOYUT VE HİZALAMA --- */
+.filter-controls-inline #araButonu {
+    width: 50px; /* Buton genişliği hep aynı kalacak */
+    height: 45px; /* Dropdown'lar ile estetik durması için sabit yükseklik */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    margin-left: 8px;
+    font-size: 13px;
+}
+
+/* --- AYARLAR SAYFASI STİLLERİ --- */
+.action-buttons-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+.settings-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+.settings-card h3 {
+    font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; font-weight: 600; text-transform: uppercase;
+}
+.settings-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+}
+.form-input {
+    background-color: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color);
+    padding: 10px 14px; border-radius: var(--radius-sm); font-size: 14px; width: 100%; outline: none;
+}
+.form-input:focus { border-color: var(--accent-primary); }
+.types-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px;
+}
+.radio-label {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-primary); cursor: pointer;
+}
+.radio-label input:disabled { opacity: 0.4; cursor: not-allowed; }
+.radio-label.disabled-text { opacity: 0.4; text-decoration: line-through; }
