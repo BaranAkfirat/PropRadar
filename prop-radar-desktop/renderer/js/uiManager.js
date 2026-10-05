@@ -19,10 +19,13 @@ class UIManager {
         // Görünümler (Views)
         this.mainView = document.getElementById('mainView');
         this.detailView = document.getElementById('detailView');
+        this.settingsView = document.getElementById('settingsView'); // YENİ EKLENDİ
         
-        // Detay Sayfası Elemanları
+        // Sayfa Geçiş Butonları
         this.backBtn = document.getElementById('backBtn');
         this.openUrlBtn = document.getElementById('openUrlBtn');
+        this.settingsBtn = document.getElementById('settingsBtn'); // YENİ EKLENDİ
+        this.settingsBackBtn = document.getElementById('settingsBackBtn'); // YENİ EKLENDİ
         
         this.currentListingUrl = '';
 
@@ -46,6 +49,19 @@ class UIManager {
             if (this.currentListingUrl) {
                 shell.openExternal(this.currentListingUrl);
             }
+        });
+
+        // Ayarlar Sayfasını Açma
+        this.settingsBtn.addEventListener('click', () => {
+            this.mainView.style.display = 'none';
+            this.detailView.style.display = 'none';
+            this.settingsView.style.display = 'flex';
+        });
+
+        // Ayarlar Sayfasından Geri Dönme
+        this.settingsBackBtn.addEventListener('click', () => {
+            this.settingsView.style.display = 'none';
+            this.mainView.style.display = 'block';
         });
     }
 

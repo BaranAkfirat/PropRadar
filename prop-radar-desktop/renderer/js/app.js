@@ -1,10 +1,12 @@
 const { ipcRenderer, shell } = require('electron');
 const TableManager = require('./js/tableManager'); // DOM Tablo işlemleri (sıralama, render)
+const SettingsManager = require('./js/settingsManager'); // YENİ EKLENDİ: Ayarlar modülü
 const UrlBuilder = require('./js/urlBuilder');     // Filtre ve tarayıcı linkleri
 const UIManager = require('./js/uiManager');       // View geçişleri, log güncellemeleri
 
 const ui = new UIManager();
-const urlBuilder = new UrlBuilder(ui.updateLog.bind(ui));
+const settings = new SettingsManager(); // Ayarlar nesnesi oluşturuldu
+const urlBuilder = new UrlBuilder(ui.updateLog.bind(ui), settings); // Ayarlar nesnesi urlBuilder'a gönderildi
 const tableManager = new TableManager(ui, ipcRenderer);
 
 document.addEventListener('DOMContentLoaded', async () => {

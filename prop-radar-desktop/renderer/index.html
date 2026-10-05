@@ -130,44 +130,107 @@
         <main class="view-container detail-view" id="settingsView" style="display: none;">
             <div class="detail-header">
                 <button id="settingsBackBtn" class="btn btn-secondary">← Geri Dön</button>
-                <h2>Arama Ayarları ve Tercihler</h2>
+                <h2>Ayarlar</h2>
             </div>
             
-            <div class="settings-content">
-                <!-- Temel Ayarlar (İl, İlçe, Fiyat, m2) -->
-                <div class="settings-card">
-                    <h3>Bölge ve Filtre Ayarları</h3>
-                    <div class="settings-grid">
-                        <div class="form-group"><label>İl (Zorunlu)</label><input type="text" id="setIl" class="form-input" placeholder="Örn: istanbul"></div>
-                        <div class="form-group"><label>İlçe (Zorunlu)</label><input type="text" id="setIlce" class="form-input" placeholder="Örn: kadikoy"></div>
-                        <div class="form-group"><label>Min Fiyat (₺)</label><input type="number" id="setMinFiyat" class="form-input" placeholder="Zorunlu Değil"></div>
-                        <div class="form-group"><label>Max Fiyat (₺)</label><input type="number" id="setMaxFiyat" class="form-input" placeholder="Zorunlu Değil"></div>
-                        <div class="form-group"><label>Min m²</label><input type="number" id="setMinM2" class="form-input" placeholder="Zorunlu Değil"></div>
-                        <div class="form-group"><label>Max m²</label><input type="number" id="setMaxM2" class="form-input" placeholder="Zorunlu Değil"></div>
+            <div class="settings-layout">
+                <!-- SOL MENÜ (Sekmeler) -->
+                <div class="settings-sidebar">
+                    <button class="settings-tab active" data-target="tab-aramalar">Arama Şablonları</button>
+                    <button class="settings-tab" data-target="tab-genel">Genel Ayarlar</button>
+                    <button class="settings-tab" data-target="tab-profil">Profil Bilgileri</button>
+                </div>
+                
+                <!-- İÇERİK ALANI -->
+                <div class="settings-content-area">
+                    
+                    <!-- TAB 1: ARAMA ŞABLONLARI -->
+                    <div id="tab-aramalar" class="settings-tab-content" style="display: block;">
+                        
+                        <!-- Kayıtlı Şablonlar Listesi & Eylemler -->
+                        <div class="settings-card" style="margin-bottom: 24px;">
+                            <div class="settings-header-actions">
+                                <h3>Kayıtlı Şablonlar</h3>
+                                <button id="addNewTemplateBtn" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">+ Yeni Kayıt Ekle</button>
+                            </div>
+                            <div class="slots-container" id="templateList">
+                                <!-- Şablon butonları JS ile buraya gelecek -->
+                            </div>
+                            <!-- Seçili Şablon Kontrolleri -->
+                            <div style="display: flex; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); justify-content: flex-end;">
+                                <button id="deleteTemplateBtn" class="btn btn-danger" style="font-size: 13px; padding: 6px 16px;">Seçili Şablonu Sil</button>
+                                <button id="saveTemplateBtn" class="btn btn-success" style="font-size: 13px; padding: 6px 16px;">Ayarları Şablona Kaydet</button>
+                            </div>
+                        </div>
+
+                        <!-- Şablon Düzenleme Formu -->
+                        <div id="templateFormContainer">
+                            <!-- Temel Ayarlar (İl, İlçe, Fiyat, m2) -->
+                            <div class="settings-card" style="margin-bottom: 24px;">
+                                <h3>Bölge ve Filtre Ayarları</h3>
+                                <div class="settings-grid">
+                                    <div class="form-group"><label>İl <span class="required">*</span></label><input type="text" id="setIl" class="form-input" placeholder="Örn: istanbul"></div>
+                                    <div class="form-group"><label>İlçe <span class="required">*</span></label><input type="text" id="setIlce" class="form-input" placeholder="Örn: kadikoy"></div>
+                                    <div class="form-group"><label>Min Fiyat (₺)</label><input type="number" id="setMinFiyat" class="form-input"></div>
+                                    <div class="form-group"><label>Max Fiyat (₺)</label><input type="number" id="setMaxFiyat" class="form-input"></div>
+                                    <div class="form-group"><label>Min m²</label><input type="number" id="setMinM2" class="form-input"></div>
+                                    <div class="form-group"><label>Max m²</label><input type="number" id="setMaxM2" class="form-input"></div>
+                                </div>
+                            </div>
+
+                            <!-- Konut Tipleri -->
+                            <div class="settings-card" style="margin-bottom: 24px;">
+                                <h3>Konut Tercihleri</h3>
+                                <label class="checkbox-label" style="margin-bottom:10px; display:inline-block; font-weight:bold; color:var(--accent-primary);">
+                                    <input type="checkbox" id="konutTumu" checked> Tüm Konut Tipleri (Biri seçilip kilitlenebilir)
+                                </label>
+                                <div class="types-grid" id="konutTipleriGrid"></div>
+                            </div>
+
+                            <!-- İş Yeri Tipleri -->
+                            <div class="settings-card">
+                                <h3>İş Yeri Tercihleri</h3>
+                                <label class="checkbox-label" style="margin-bottom:10px; display:inline-block; font-weight:bold; color:var(--accent-primary);">
+                                    <input type="checkbox" id="isyeriTumu" checked> Tüm İş Yeri Tipleri (Biri seçilip kilitlenebilir)
+                                </label>
+                                <div class="types-grid" id="isyeriTipleriGrid"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Konut Tipleri -->
-                <div class="settings-card">
-                    <h3>Konut Tercihleri</h3>
-                    <label class="checkbox-label" style="margin-bottom:10px; display:inline-block; font-weight:bold; color:var(--accent-primary);">
-                        <input type="checkbox" id="konutTumu" checked> Tüm Konut Tipleri (Biri seçilip kilitlenebilir)
-                    </label>
-                    <div class="types-grid" id="konutTipleriGrid"></div>
-                </div>
+                    <!-- TAB 2: GENEL AYARLAR -->
+                    <div id="tab-genel" class="settings-tab-content" style="display: none;">
+                        <div class="settings-card">
+                            <h3>Uygulama Ayarları</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px;">Genel sistem ayarları buraya eklenecektir.</p>
+                        </div>
+                    </div>
 
-                <!-- İş Yeri Tipleri -->
-                <div class="settings-card">
-                    <h3>İş Yeri Tercihleri</h3>
-                    <label class="checkbox-label" style="margin-bottom:10px; display:inline-block; font-weight:bold; color:var(--accent-primary);">
-                        <input type="checkbox" id="isyeriTumu" checked> Tüm İş Yeri Tipleri (Biri seçilip kilitlenebilir)
-                    </label>
-                    <div class="types-grid" id="isyeriTipleriGrid"></div>
+                    <!-- TAB 3: PROFİL BİLGİLERİ -->
+                    <div id="tab-profil" class="settings-tab-content" style="display: none;">
+                        <div class="settings-card">
+                            <h3>Profil Bilgileri</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px;">Kullanıcı ve lisans bilgileri buraya eklenecektir.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
 
     </div> 
+
+    <!-- YENİ KAYIT İSİM MODALI (Özel Prompt) -->
+        <div id="customPromptOverlay" class="custom-prompt-overlay" style="display: none;">
+            <div class="custom-prompt-box">
+                <h4 style="margin-bottom: 16px; font-size: 15px; color: var(--text-primary);">Yeni Şablon Adı Belirleyin</h4>
+                <input type="text" id="customPromptInput" class="form-input" placeholder="Örn: Yeni Kayıt">
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
+                    <button id="customPromptCancel" class="btn btn-secondary">İptal</button>
+                    <button id="customPromptOk" class="btn btn-primary">Oluştur</button>
+                </div>
+            </div>
+        </div>
 
     <script src="js/app.js"></script>
 </body>
