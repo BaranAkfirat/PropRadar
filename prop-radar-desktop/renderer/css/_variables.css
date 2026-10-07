@@ -1,0 +1,24 @@
+/* --- MODERN SAAS DARK THEME --- */
+:root {
+    --bg-main: #09090b;          /* Derin koyu arka plan */
+    --bg-surface: #18181b;       /* Kart ve panel arka planı */
+    --bg-surface-hover: #27272a; /* Hover durumu */
+    --border-color: #27272a;     /* İnce, zarif kenarlıklar */
+    
+    --text-primary: #f4f4f5;     /* Parlak beyaz metin */
+    --text-secondary: #a1a1aa;   /* Yumuşak gri metin */
+    
+    --accent-primary: #3b82f6;   /* Canlı Mavi (Başlat) */
+    --accent-primary-hover: #2563eb;
+    --accent-danger: #ef4444;    /* Kırmızı (Durdur) */
+    --accent-danger-hover: #dc2626;
+    --accent-success: #10b981;   /* Yeşil (Excel) */
+    --accent-success-hover: #059669;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}

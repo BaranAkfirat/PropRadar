@@ -120,6 +120,16 @@ class HepsiemlakAnalyzer {
             if (text.includes('+')) features['odaSayisi'] = text;
         });
 
+        let durum = 'Diğer';
+        const bcItems = document.querySelectorAll('.hepsiemlak-breadcrumb li, .breadcrumb-item');
+        bcItems.forEach(item => {
+            const text = item.innerText.trim();
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes('satılık') || lowerText.includes('kiralık') || lowerText.includes('devren')) {
+                durum = text;
+            }
+        });
+
         const data = {
             url: window.location.href,
             title: title,
@@ -132,6 +142,8 @@ class HepsiemlakAnalyzer {
             locationCity: city,
             locationTown: town,
             locationQuarter: quarter,
+            
+            durum: durum, // YENİ: Masaüstü uygulamasına gönderilecek durum verisi
             
             ilanNo: features['İlan no'] || features['İlan Numarası'] || features['İlan No'] || 'N/A',
             ilanTarihi: features['Son Güncelleme'] || features['İlan Güncelleme Tarihi'] || features['İlan Tarihi'] || 'N/A',

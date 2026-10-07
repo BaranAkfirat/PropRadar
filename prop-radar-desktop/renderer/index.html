@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Prop Radar - Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <!-- MODÜL SEÇİM EKRANI (AÇILIŞ) -->
@@ -126,31 +126,57 @@
 
         <!-- 1. GÖRÜNÜM: ANA TABLO -->
         <main class="view-container" id="mainView">
-            <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="İlan başlığı, satıcı, telefon veya özellik ara...">
-            </div>
+            <!-- Arama Kutusu -->
+                        <div class="search-container">
+                            <input type="text" id="searchInput" class="search-input" placeholder="İlan başlığı, no, şehir vb. ara...">
+                        </div>
 
-            <div class="table-container">
-                <table id="listingsTable">
-                    <thead>
-                        <tr>
-                            <th width="80">Görsel</th>
-                            <th width="110">Platform</th>
-                            <th width="110" class="sortable">İlan Tarihi <span>↕</span></th>
-                            <th class="sortable">İlan Başlığı <span>↕</span></th>
-                            <th width="110" class="sortable">Fiyat <span>↕</span></th>
-                            <th width="110" class="sortable">Emlak Tipi <span>↕</span></th>
-                            <th width="80" class="sortable">Oda <span>↕</span></th>
-                            <th width="130" class="sortable">Konum <span>↕</span></th>
-                            <th width="120">Satıcı</th>
-                            <th width="120">Telefon</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listingsBody">
-                        <!-- İlanlar buraya gelecek -->
-                    </tbody>
-                </table>
-            </div>
+                        <!-- Tablo -->
+                        <div class="table-container">
+                            <table id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Görsel</th>
+                                        <th>Platform</th>
+                                        <!-- YENİ: EXCEL TİPİ DURUM SÜTUNU VE FİLTRESİ -->
+                                        <!-- YENİ: EXCEL TİPİ DURUM SÜTUNU VE FİLTRESİ -->
+                                        <th style="min-width: 120px; padding: 8px 16px; position: sticky;">
+                                            <div id="durumFilterTrigger" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none;" title="Duruma Göre Filtrele">
+                                                <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.5px;">DURUM</span>
+                                                <span style="font-size: 10px; opacity: 0.6;">▼</span>
+                                            </div>
+                                            
+                                            <!-- Excel Tipi Açılır Pencere (Pop-up) -->
+                                            <div id="durumFilterPopup" class="excel-filter-popup" style="display: none;">
+                                                <label class="excel-filter-label">
+                                                    <input type="checkbox" value="Satılık" class="durum-checkbox" checked>
+                                                    <span>Satılık</span>
+                                                </label>
+                                                <label class="excel-filter-label">
+                                                    <input type="checkbox" value="Kiralık" class="durum-checkbox" checked>
+                                                    <span>Kiralık</span>
+                                                </label>
+                                                <label class="excel-filter-label">
+                                                    <input type="checkbox" value="Diğer" class="durum-checkbox" checked>
+                                                    <span>Diğer</span>
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th class="sortable">Tarih <span>↕</span></th>
+                                        <th>İlan Başlığı</th>
+                                        <th class="sortable">Fiyat <span>↕</span></th>
+                                        <th>Emlak Tipi</th>
+                                        <th>Oda Sayısı</th>
+                                        <th>Konum</th>
+                                        <th>Satıcı</th>
+                                        <th>İletişim</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listingsBody">
+                                    <!-- Veriler buraya eklenecek -->
+                                </tbody>
+                            </table>
+                        </div>  
         </main>
 
         <!-- 2. GÖRÜNÜM: İLAN DETAY SAYFASI -->

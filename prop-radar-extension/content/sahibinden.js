@@ -74,6 +74,18 @@ class SahibindenAnalyzer {
         if (townMatch) town = townMatch[1];
         if (quarterMatch) quarter = quarterMatch[1];
 
+        // --- EKLENECEK BÖLÜM ---
+        let durum = 'Diğer';
+        // bc-item sınıflı tüm breadcrumb elemanlarını gezip durumu tespit ediyoruz
+        const bcItems = document.querySelectorAll('.bc-item');
+        bcItems.forEach(item => {
+            const text = item.innerText.trim();
+            const lowerText = text.toLowerCase();
+            if (lowerText === 'satılık' || lowerText === 'kiralık' || lowerText === 'devren' || lowerText === 'günlük kiralık') {
+                durum = text;
+            }
+        });
+
         const data = {
             url: window.location.href,
             title: titleEl ? titleEl.innerText.trim() : 'N/A',
@@ -85,6 +97,8 @@ class SahibindenAnalyzer {
             locationCity: city,
             locationTown: town,
             locationQuarter: quarter,
+            
+            durum: durum, // YENİ: Masaüstü uygulamasına gönderilecek durum verisi
             
             ilanNo: features['İlan No'] || 'N/A',
             ilanTarihi: features['İlan Tarihi'] || 'N/A',

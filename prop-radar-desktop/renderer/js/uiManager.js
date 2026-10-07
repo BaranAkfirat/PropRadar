@@ -109,7 +109,7 @@ class UIManager {
                     // Giriş yapıldığında her zaman ana tablo ekranının (mainView) açılmasını sağla
                     this.settingsView.style.display = 'none';
                     this.detailView.style.display = 'none';
-                    this.mainView.style.display = 'block';
+                    this.mainView.style.display = 'flex';
                     
                     this.updateLog('Sisteme başarıyla giriş yapıldı.');
                 } else {
@@ -170,7 +170,7 @@ class UIManager {
         // İlan Detayından Ana Tabloya Dönüş
         this.backBtn.addEventListener('click', () => {
             this.detailView.style.display = 'none';
-            this.mainView.style.display = 'block';
+            this.mainView.style.display = 'flex';
         });
 
         // İlan Detayındayken Tarayıcıda Aç
@@ -190,7 +190,7 @@ class UIManager {
         // Ayarlar Sayfasından Geri (Ana Tabloya) Dönüş
         this.settingsBackBtn.addEventListener('click', () => {
             this.settingsView.style.display = 'none';
-            this.mainView.style.display = 'block';
+            this.mainView.style.display = 'flex';
         });
     }
 

@@ -1,0 +1,33 @@
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body { 
+    background-color: var(--bg-main); 
+    color: var(--text-primary); 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    height: 100vh; 
+    overflow: hidden; 
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-container { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh; 
+    overflow: hidden; /* YENİ: Ekranın genel taşmasını kesin engeller */
+}
+
+/* Özel Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+.required { 
+    color: var(--accent-danger); 
+    font-weight: bold; 
+    margin-left: 2px; 
+}

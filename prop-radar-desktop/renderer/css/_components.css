@@ -1,0 +1,213 @@
+/* Butonlar */
+.btn { 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: var(--radius-sm); 
+    font-weight: 600; 
+    font-size: 13px;
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    color: white; 
+    letter-spacing: 0.3px;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(50%); }
+.btn:not(:disabled):active { transform: translateY(1px); }
+
+.btn-primary { background-color: var(--accent-primary); }
+.btn-primary:not(:disabled):hover { background-color: var(--accent-primary-hover); }
+
+.btn-danger { background-color: var(--accent-danger); }
+.btn-danger:not(:disabled):hover { background-color: var(--accent-danger-hover); }
+
+.btn-success { background-color: var(--accent-success); }
+.btn-success:not(:disabled):hover { background-color: var(--accent-success-hover); }
+
+.btn-secondary { background-color: var(--bg-surface-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-secondary:hover { background-color: var(--border-color); }
+
+.btn-scroll {
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-scroll:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Form Elemanları */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-input {
+    background-color: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color);
+    padding: 10px 14px; border-radius: var(--radius-sm); font-size: 14px; width: 100%; outline: none;
+}
+.form-input:focus { border-color: var(--accent-primary); }
+
+select.form-input {
+    appearance: auto;
+    cursor: pointer;
+    background-color: var(--bg-main);
+}
+select.form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.search-input {
+    width: 100%; max-width: 400px;
+    background-color: var(--bg-main); color: var(--text-primary);
+    border: 1px solid var(--border-color); padding: 12px 16px;
+    border-radius: var(--radius-sm); font-size: 14px;
+    transition: all 0.2s ease; box-shadow: var(--shadow-sm);
+}
+.search-input::placeholder { color: var(--text-secondary); }
+.search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+
+/* Badges ve İndikatörler */
+.platform-badge {
+    background-color: rgba(59, 130, 246, 0.15); color: #3b82f6;
+    padding: 4px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-badge { 
+    display: flex; align-items: center; gap: 8px; 
+    background: var(--bg-main); padding: 6px 14px; 
+    border-radius: 20px; font-size: 13px; font-weight: 500; border: 1px solid var(--border-color);
+}
+.indicator { width: 8px; height: 8px; border-radius: 50%; }
+.indicator.disconnected { background-color: var(--accent-danger); box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+.indicator.connected { background-color: var(--accent-success); box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+
+.mini-log { 
+    font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 12px; color: var(--text-secondary); 
+    background: var(--bg-main); padding: 10px 16px; border-radius: var(--radius-sm); 
+    width: 380px; border: 1px solid var(--border-color);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+}
+
+/* Modallar */
+.custom-prompt-overlay, .login-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(9, 9, 11, 0.9); z-index: 2000;
+    display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+}
+.custom-prompt-overlay { z-index: 9999; backdrop-filter: blur(2px); background: rgba(9, 9, 11, 0.8); }
+
+.custom-prompt-box, .login-box {
+    background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+    width: 320px; padding: 24px; box-shadow: var(--shadow-md); position: relative;
+}
+.login-box {
+    width: 380px; padding: 32px; border-color: var(--accent-primary);
+    text-align: center; box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.3);
+    animation: slideUp 0.3s ease-out;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.login-box h3 { color: var(--text-primary); font-size: 20px; margin-bottom: 8px; }
+.login-box p { color: var(--text-secondary); font-size: 13px; margin-bottom: 24px; line-height: 1.5; }
+
+.close-btn {
+    position: absolute; top: 12px; right: 16px; background: none; border: none;
+    color: var(--text-secondary); font-size: 18px; cursor: pointer; transition: color 0.2s;
+}
+.close-btn:hover { color: var(--accent-danger); }
+
+/* 3D Küp Sahnesi */
+.cube-scene {
+    flex: 1; height: 42px; perspective: 1000px; margin: 0 30px;
+}
+.cube {
+    width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1); transform: translateZ(-21px);
+}
+.cube.show-browser { transform: translateZ(-21px) rotateX(90deg); }
+.cube-face {
+    position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; backface-visibility: hidden;
+}
+.cube-front { transform: rotateX(0deg) translateZ(21px); }
+.cube-bottom { transform: rotateX(-90deg) translateZ(21px); }
+
+/* --- DURUM (SATILIK/KİRALIK) ROZETLERİ --- */
+.badge-satilik {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #10b981 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.badge-kiralik {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.badge-devren {
+    background-color: rgba(139, 92, 246, 0.15) !important;
+    color: #8b5cf6 !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+/* --- EXCEL TİPİ FİLTRE POP-UP STİLLERİ --- */
+.excel-filter-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+    min-width: 130px;
+    cursor: default;
+}
+
+.excel-filter-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: none; /* Üst başlığın büyük harf ayarını ezer */
+}
+
+.excel-filter-label input[type="checkbox"] {
+    accent-color: var(--accent-primary);
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+}
+
+.excel-filter-label:hover {
+    color: var(--accent-primary);
+}

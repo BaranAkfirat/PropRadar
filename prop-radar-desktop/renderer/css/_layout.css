@@ -1,0 +1,77 @@
+/* Header ve Üst Kontroller */
+.top-bar { 
+    display: flex; align-items: center; justify-content: space-between; 
+    background: var(--bg-surface); padding: 20px 32px; border-bottom: 1px solid var(--border-color); 
+    box-shadow: var(--shadow-sm); z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 20px; }
+h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
+.controls { display: flex; gap: 12px; }
+
+.filter-controls-inline {
+    display: flex; gap: 8px; align-items: center; background: var(--bg-main);
+    padding: 6px 16px; border-radius: 24px; border: 1px dashed var(--border-color); width: max-content;
+}
+.form-select-sm {
+    background-color: transparent; color: var(--text-primary); border: none; border-right: 1px solid var(--border-color);
+    padding: 4px 12px 4px 4px; font-size: 13px; outline: none; cursor: pointer;
+    width: 130px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+.form-select-sm:last-of-type { border-right: none; }
+.form-select-sm option { background-color: var(--bg-surface); }
+.filter-controls-inline #araButonu {
+    width: 50px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;
+    border-radius: 16px; margin-left: 8px; font-size: 13px;
+}
+
+.right-panel { display: flex; align-items: center; gap: 16px; }
+.action-buttons-col { display: flex; flex-direction: column; gap: 8px; }
+
+/* Ana İçerik Konteyneri */
+.view-container { 
+    flex: 1; overflow-y: hidden; background-color: var(--bg-main); padding: 32px; 
+    display: flex; flex-direction: column;
+}
+
+/* Tablo */
+.search-container { margin-bottom: 20px; position: relative; }
+#mainView {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ekran yüksekliği kadar sabitler */
+}
+
+.search-container { margin-bottom: 20px; position: relative; }
+.table-container {
+    flex: 1; 
+    min-height: 0; /* GÜNCELLENDİ: İçerik çok olsa bile kutuyu esnetmez */
+    overflow-y: auto; 
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color); 
+    background: var(--bg-surface); 
+    box-shadow: var(--shadow-md);
+}
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+thead th { 
+    position: sticky; top: 0; background-color: var(--bg-surface); color: var(--text-secondary); 
+    padding: 16px; font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;
+    box-shadow: 0 1px 0 var(--border-color); z-index: 10; 
+}
+thead th::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; top: -100px;
+    background-color: var(--bg-surface); z-index: -1;
+}
+
+th.sortable { cursor: pointer; user-select: none; transition: color 0.2s ease, background-color 0.2s ease; }
+th.sortable:hover { color: var(--accent-primary); background-color: var(--bg-surface-hover); }
+th.sortable span { font-size: 11px; margin-left: 6px; opacity: 0.4; transition: opacity 0.2s; }
+th.sortable:hover span { opacity: 1; }
+
+tbody tr { transition: background 0.15s ease; cursor: pointer; }
+tbody tr:hover { background-color: var(--bg-surface-hover); }
+tbody td { padding: 16px; font-size: 14px; vertical-align: middle; border-bottom: 1px solid var(--border-color); background-color: var(--bg-surface); }
+tbody tr:last-child td { border-bottom: none; }
+
+.thumb-img { width: 72px; height: 52px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+.empty-thumb { width: 72px; height: 52px; background: var(--bg-main); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-secondary); border: 1px dashed var(--border-color); }
