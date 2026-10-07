@@ -19,7 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.getElementById('startBtn').addEventListener('click', () => {
-    ipcRenderer.send('ui-command', 'START_SCAN');
+    // YENİ: Masada kayıtlı olan tüm ilan numaralarını bir listeye alıyoruz
+    const knownIds = tableManager.appStateListings
+        .map(item => item.ilanNo)
+        .filter(no => no && no !== 'N/A');
+    
+    // YENİ: 'START_SCAN' komutunun yanına bu listeyi de paketleyip gönderiyoruz
+    ipcRenderer.send('ui-command', { command: 'START_SCAN', knownIds: knownIds });
+    
     ui.setScanState(true);
 });
 

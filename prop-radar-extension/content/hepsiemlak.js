@@ -10,42 +10,49 @@ class HepsiemlakAnalyzer {
     isListingPage() { return document.querySelectorAll('script[type="application/ld+json"]').length > 0; }
     isDetailPage() { return document.querySelector(this.selectors.detailTitle) !== null; }
 
-    extractUrls() {
-        let urls = [];
-        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-        scripts.forEach(script => {
-            try {
-                const json = JSON.parse(script.innerText);
-                const graph = json['@graph'] || (Array.isArray(json) ? json : [json]);
+    extractUrls(knownIds = []) {
+        let urlsToQueue = [];
+        
+        // Yöntem: article ID'lerinden yakalama
+        const articles = document.querySelectorAll('article.listingCard__box');
+        
+        if (articles.length > 0) {
+            articles.forEach(article => {
+                const ilanId = article.id; 
                 
-                graph.forEach(node => {
-                    if (node['@type'] === 'ItemList' && node.itemListElement) {
-                        node.itemListElement.forEach(el => {
-                            if (el.item && el.item.url) {
-                                urls.push(el.item.url);
-                            }
-                        });
-                    }
-                });
-            } catch (e) {}
-        });
-
-        if (urls.length === 0) {
+                // Eğer bu ID kayıtlılarımızda varsa atla
+                if (ilanId && knownIds.includes(ilanId)) return;
+                
+                const linkEl = article.querySelector('a.listingCard__media-link');
+                if (linkEl && linkEl.href) {
+                    urlsToQueue.push(linkEl.href);
+                }
+            });
+        } else {
+            // Fallback: A etiketlerinin URL'inden numarayı ayıklama
             const links = document.querySelectorAll('a[href*="/daire/"], a[href*="/isyeri/"], a[href*="/arsa/"]');
-            urls = Array.from(links).map(a => a.href);
+            links.forEach(a => {
+                const href = a.href;
+                if (!href) return;
+                
+                // URL'in sonundaki ilan nosunu regex ile çek
+                const match = href.match(/(\d+-\d+)$/);
+                const ilanId = match ? match[1] : null;
+                
+                if (ilanId && knownIds.includes(ilanId)) return;
+                
+                urlsToQueue.push(href);
+            });
         }
 
-        const uniqueUrls = [...new Set(urls)]
+        const uniqueUrls = [...new Set(urlsToQueue)]
             .filter(href => href && !href.includes('/proje/')) 
             .filter(href => href.includes('hepsiemlak.com') && /\d+-\d+$/.test(href));
 
         if (uniqueUrls.length > 0) {
             chrome.runtime.sendMessage({ action: "URLS_GATHERED", urls: uniqueUrls });
         } else {
-            chrome.runtime.sendMessage({ 
-                type: "LOG", 
-                message: "Hata: Hepsiemlak sayfasında link bulunamadı. Sayfayı manuel yenileyin." 
-            });
+            chrome.runtime.sendMessage({ type: "LOG", message: "Bu sayfadaki tüm ilanlar veritabanında mevcut. Atlanıyor..." });
         }
     }
 
@@ -120,15 +127,39 @@ class HepsiemlakAnalyzer {
             if (text.includes('+')) features['odaSayisi'] = text;
         });
 
+        // --- YENİ EKLENEN KISIM: JSON-LD ÜZERİNDEN DURUM TESPİTİ ---
         let durum = 'Diğer';
-        const bcItems = document.querySelectorAll('.hepsiemlak-breadcrumb li, .breadcrumb-item');
-        bcItems.forEach(item => {
-            const text = item.innerText.trim();
-            const lowerText = text.toLowerCase();
-            if (lowerText.includes('satılık') || lowerText.includes('kiralık') || lowerText.includes('devren')) {
-                durum = text;
+        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+        
+        scripts.forEach(script => {
+            try {
+                const json = JSON.parse(script.innerText);
+                const graph = json['@graph'] || (Array.isArray(json) ? json : [json]);
+                
+                graph.forEach(node => {
+                    if (node['@type'] === 'BreadcrumbList' && node.itemListElement) {
+                        node.itemListElement.forEach(el => {
+                            if (el.item && el.item.name) {
+                                const lowerName = el.item.name.toLowerCase();
+                                if (lowerName === 'satılık' || lowerName === 'kiralık' || lowerName === 'devren' || lowerName.includes('günlük kiralık')) {
+                                    durum = el.item.name;
+                                }
+                            }
+                        });
+                    }
+                });
+            } catch (e) {
+                // Parse hatası olursa atla
             }
         });
+
+        if (durum === 'Diğer') {
+            const urlLower = window.location.href.toLowerCase();
+            if (urlLower.includes('satilik')) durum = 'Satılık';
+            else if (urlLower.includes('kiralik')) durum = 'Kiralık';
+            else if (urlLower.includes('devren')) durum = 'Devren';
+        }
+        // ---------------------------------------------------------
 
         const data = {
             url: window.location.href,
@@ -143,7 +174,7 @@ class HepsiemlakAnalyzer {
             locationTown: town,
             locationQuarter: quarter,
             
-            durum: durum, // YENİ: Masaüstü uygulamasına gönderilecek durum verisi
+            durum: durum, 
             
             ilanNo: features['İlan no'] || features['İlan Numarası'] || features['İlan No'] || 'N/A',
             ilanTarihi: features['Son Güncelleme'] || features['İlan Güncelleme Tarihi'] || features['İlan Tarihi'] || 'N/A',
@@ -171,7 +202,7 @@ class HepsiemlakAnalyzer {
         }
         
         chrome.runtime.onMessage.addListener((request) => {
-            if (request.action === "GATHER_URLS") this.extractUrls();
+            if (request.action === "GATHER_URLS") this.extractUrls(request.knownIds || []);
         });
     }
 }

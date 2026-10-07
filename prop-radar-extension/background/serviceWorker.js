@@ -22,7 +22,11 @@ function connectWebSocket() {
             const data = JSON.parse(event.data);
             if (data.action === 'START_SCAN') {
                 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    if (tabs[0]) chrome.tabs.sendMessage(tabs[0].id, { action: "GATHER_URLS" });
+                    // YENİ: Masaüstünden gelen kayıtlı ilan numaralarını (knownIds) content script'e pasla
+                    if (tabs[0]) chrome.tabs.sendMessage(tabs[0].id, { 
+                        action: "GATHER_URLS", 
+                        knownIds: data.knownIds || [] 
+                    });
                 });
             }
             else if (data.action === 'STOP_SCAN') {

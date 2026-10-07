@@ -16,9 +16,14 @@ module.exports = function setupIpcHandlers(mainWindow, wsServer) {
         dataStore.saveData(data);
     });
 
-    ipcMain.on('ui-command', async (event, command) => { 
+    ipcMain.on('ui-command', async (event, data) => { 
+        // YENİ: Artık data string değil, obje olarak geliyor. Komutu ve ID'leri ayıralım.
+        const command = typeof data === 'string' ? data : data.command;
+        const knownIds = data.knownIds || [];
+
         if (command === 'START_SCAN') {
-            const success = wsServer.sendCommandToExtension({ action: 'START_SCAN' });
+            // YENİ: knownIds listesini eklentiye yolluyoruz
+            const success = wsServer.sendCommandToExtension({ action: 'START_SCAN', knownIds: knownIds });
             event.reply('ui-command-reply', { success, message: success ? 'Tarama başlatıldı!' : 'Hata!' });
         } 
         else if (command === 'STOP_SCAN') {

@@ -14,10 +14,29 @@ class SahibindenAnalyzer {
     isListingPage() { return document.querySelectorAll(this.selectors.listingLinks).length > 0; }
     isDetailPage() { return document.querySelector(this.selectors.detailTitle) !== null; }
 
-    extractUrls() {
-        const linkElements = document.querySelectorAll(this.selectors.listingLinks);
-        const urls = Array.from(linkElements).map(el => el.href).filter(href => href);
-        if (urls.length > 0) chrome.runtime.sendMessage({ action: "URLS_GATHERED", urls: urls });
+    extractUrls(knownIds = []) {
+        // Satırların (tr) tamamını seç
+        const items = document.querySelectorAll('.searchResultsItem[data-id]');
+        const urlsToQueue = [];
+
+        items.forEach(item => {
+            const ilanId = item.getAttribute('data-id');
+            
+            // Eğer ilan numarası zaten kayıtlılarımız arasındaysa bu satırı tamamen es geç
+            if (ilanId && knownIds.includes(ilanId)) return;
+
+            const linkEl = item.querySelector('.classifiedTitle');
+            if (linkEl && linkEl.href) {
+                urlsToQueue.push(linkEl.href);
+            }
+        });
+
+        if (urlsToQueue.length > 0) {
+            chrome.runtime.sendMessage({ action: "URLS_GATHERED", urls: urlsToQueue });
+        } else {
+            // Sayfadaki tüm ilanlar zaten kayıtlıysa sistemi bilgilendir
+            chrome.runtime.sendMessage({ type: "LOG", message: "Bu sayfadaki tüm ilanlar veritabanında mevcut. Atlanıyor..." });
+        }
     }
 
     extractDetailData() {
@@ -127,8 +146,10 @@ class SahibindenAnalyzer {
             }, 1500);
             setTimeout(() => this.extractDetailData(), 4000);
         }
+        
         chrome.runtime.onMessage.addListener((request) => {
-            if (request.action === "GATHER_URLS") this.extractUrls();
+            // YENİ: knownIds parametresini fonksiyonun içine gönder[cite: 3]
+            if (request.action === "GATHER_URLS") this.extractUrls(request.knownIds || []);
         });
     }
 }
