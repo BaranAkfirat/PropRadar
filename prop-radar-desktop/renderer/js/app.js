@@ -55,3 +55,39 @@ ipcRenderer.on('ws-message', (event, data) => {
 ipcRenderer.on('ui-command-reply', (event, response) => {
     ui.updateLog(response.message, !response.success);
 });
+
+// --- YEDEK ALMA VE YÜKLEME (BACKUP) SİSTEMİ ---
+
+// 1. Yedek Al Butonu
+const exportBackupBtn = document.getElementById('exportBackupBtn');
+if (exportBackupBtn) {
+    exportBackupBtn.addEventListener('click', () => {
+        // Tarayıcı önbelleğindeki (localStorage) ayarları paketle
+        const backupData = {
+            templates: localStorage.getItem('prop_radar_templates'),
+            customStatuses: localStorage.getItem('prop_radar_custom_statuses'),
+            preferences: localStorage.getItem('prop_radar_preferences')
+        };
+        // Arka plana yolla
+        ipcRenderer.send('export-backup', backupData);
+    });
+}
+
+// 2. Yedeği Yükle Butonu
+const importBackupBtn = document.getElementById('importBackupBtn');
+if (importBackupBtn) {
+    importBackupBtn.addEventListener('click', () => {
+        ipcRenderer.send('import-backup');
+    });
+}
+
+// 3. Yükleme Başarılı Olduğunda
+ipcRenderer.on('import-backup-success', (event, localData) => {
+    // Gelen yedekteki ayarları localStorage'a yaz
+    if (localData.templates) localStorage.setItem('prop_radar_templates', localData.templates);
+    if (localData.customStatuses) localStorage.setItem('prop_radar_custom_statuses', localData.customStatuses);
+    if (localData.preferences) localStorage.setItem('prop_radar_preferences', localData.preferences);
+    
+    alert('Yedek başarıyla yüklendi! Yeni verilerin uygulanması için sistem yeniden başlatılacak.');
+    location.reload(); // Sayfayı yenileyerek yeni verilerin tabloya gelmesini sağla
+});

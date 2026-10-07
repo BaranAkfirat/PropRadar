@@ -1,6 +1,7 @@
 const { ipcMain, dialog } = require('electron');
 const dataStore = require('./dataStore');
 const ExcelExporter = require('./excelExporter');
+const fs = require('fs'); // YENİ: Dosya okuma/yazma kütüphanesi
 
 module.exports = function setupIpcHandlers(mainWindow, wsServer) {
     let extractedData = []; 
@@ -49,6 +50,57 @@ module.exports = function setupIpcHandlers(mainWindow, wsServer) {
                 }
             } else {
                 event.reply('ui-command-reply', { success: false, message: 'Dışa aktarılacak veri bulunamadı.' });
+            }
+        }
+    });
+    
+    // YEDEK OLUŞTURMA İŞLEMİ
+    ipcMain.on('export-backup', async (event, localData) => {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+            title: 'Prop Radar Yedeğini Kaydet',
+            defaultPath: `PropRadar_Yedek_${timestamp}.propradar`,
+            filters: [{ name: 'PropRadar Yedek Dosyası', extensions: ['propradar'] }]
+        });
+
+        if (!canceled && filePath) {
+            try {
+                // Hem localStorage ayarlarını hem de json'daki ilanları tek bir objede birleştir
+                const fullBackup = {
+                    localData: localData,
+                    listings: extractedData 
+                };
+                fs.writeFileSync(filePath, JSON.stringify(fullBackup, null, 2), 'utf-8');
+                event.reply('ui-command-reply', { success: true, message: 'Yedek başarıyla masaüstüne kaydedildi!' });
+            } catch (err) {
+                event.reply('ui-command-reply', { success: false, message: 'Yedek kaydedilemedi: ' + err.message });
+            }
+        }
+    });
+
+    // YEDEK YÜKLEME İŞLEMİ
+    ipcMain.on('import-backup', async (event) => {
+        const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+            title: 'Yedek Dosyasını Seçin',
+            filters: [{ name: 'PropRadar Yedek Dosyası', extensions: ['propradar'] }],
+            properties: ['openFile']
+        });
+
+        if (!canceled && filePaths.length > 0) {
+            try {
+                const fileContent = fs.readFileSync(filePaths[0], 'utf-8');
+                const backupData = JSON.parse(fileContent);
+                
+                // İlanları doğrudan dataStore.json'a yaz
+                if (backupData.listings) {
+                    extractedData = backupData.listings;
+                    dataStore.saveData(extractedData);
+                }
+                
+                // localStorage ayarlarını arayüze (app.js) geri yolla
+                event.reply('import-backup-success', backupData.localData || {});
+            } catch (err) {
+                event.reply('ui-command-reply', { success: false, message: 'Hatalı veya bozuk yedek dosyası seçtiniz.' });
             }
         }
     });
