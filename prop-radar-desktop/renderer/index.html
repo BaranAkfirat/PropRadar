@@ -6,6 +6,59 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- MODÜL SEÇİM EKRANI (AÇILIŞ) -->
+    <div id="landingScreen" class="landing-screen">
+        <div class="landing-header">
+            <h1>Prop Radar</h1>
+            <p>Sektörel Otomasyon Sistemleri</p>
+        </div>
+        
+        <div class="module-cards-container">
+            <!-- 1. EMLAK MODÜLÜ (AKTİF) -->
+            <div class="module-card active-module" id="btnEmlak">
+                <div class="module-icon">
+                    <!-- Buraya kendi seçeceğin Emlak PNG dosyasını ekleyeceksin -->
+                    <img src="./assets/emlak-icon.png" alt="Emlak" id="emlakImgPlaceholder">
+                </div>
+                <h2>Emlak Radarı</h2>
+                <p>Sahibinden, Hepsiemlak ve diğer platformlar üzerinden anlık gayrimenkul taraması ve analizi.</p>
+                <button class="btn btn-primary">Sisteme Giriş Yap</button>
+            </div>
+            
+            <!-- 2. GALERİ MODÜLÜ (KAPALI) -->
+            <div class="module-card disabled-module">
+                <div class="badge-coming-soon">ÇOK YAKINDA</div>
+                <div class="module-icon">
+                    <!-- Buraya kendi seçeceğin Oto/Galeri PNG dosyasını ekleyeceksin -->
+                    <img src="./assets/galeri-icon.png" alt="Galeri" id="galeriImgPlaceholder">
+                </div>
+                <h2>Oto Radar</h2>
+                <p>İkinci el araç piyasası, fiyat analizleri ve anlık yeni ilan bildirimleri.</p>
+                <button class="btn btn-secondary" disabled>Erişime Kapalı</button>
+            </div>
+        </div>
+
+        <!-- ÜRÜN ANAHTARI GİRİŞ MODALI (Başlangıçta Gizli) -->
+        <div id="loginModalOverlay" class="login-overlay" style="display: none;">
+            <div class="login-box">
+                <button id="closeLoginBtn" class="close-btn">✕</button>
+                <h3>Ürün Anahtarı</h3>
+                <p>Prop Radar sistemine giriş yapmak için lisans anahtarınızı giriniz.</p>
+                
+                <input type="text" id="licenseKeyInput" class="form-input" placeholder="XXXX-YYYY-ZZZZ-WWWW" style="text-align: center; font-size: 16px; letter-spacing: 2px; margin-bottom: 12px;">
+                
+                <!-- YENİ: Beni Hatırla Kutucuğu -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px;">
+                    <input type="checkbox" id="rememberMeCb" style="cursor: pointer;">
+                    <label for="rememberMeCb" style="color: var(--text-secondary); font-size: 13px; cursor: pointer; user-select: none;">Beni Hatırla</label>
+                </div>
+                
+                <button id="submitLicenseBtn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px;">Doğrula ve Giriş Yap</button>
+                <div id="loginErrorMsg" style="color: var(--accent-danger); font-size: 12px; text-align: center; margin-top: 10px; display: none;">Geçersiz veya süresi dolmuş anahtar!</div>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         
         <!-- ÜST KONTROL PANELİ -->
@@ -169,8 +222,18 @@
                             <div class="settings-card" style="margin-bottom: 24px;">
                                 <h3>Bölge ve Filtre Ayarları</h3>
                                 <div class="settings-grid">
-                                    <div class="form-group"><label>İl <span class="required">*</span></label><input type="text" id="setIl" class="form-input" placeholder="Örn: istanbul"></div>
-                                    <div class="form-group"><label>İlçe <span class="required">*</span></label><input type="text" id="setIlce" class="form-input" placeholder="Örn: kadikoy"></div>
+                                    <div class="form-group">
+                                        <label>İl <span class="required">*</span></label>
+                                        <select id="setIl" class="form-input">
+                                            <option value="">İl Yükleniyor...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>İlçe <span class="required">*</span></label>
+                                        <select id="setIlce" class="form-input" disabled>
+                                            <option value="">Önce İl Seçin</option>
+                                        </select>
+                                    </div>
                                     <div class="form-group"><label>Min Fiyat (₺)</label><input type="number" id="setMinFiyat" class="form-input"></div>
                                     <div class="form-group"><label>Max Fiyat (₺)</label><input type="number" id="setMaxFiyat" class="form-input"></div>
                                     <div class="form-group"><label>Min m²</label><input type="number" id="setMinM2" class="form-input"></div>
@@ -200,9 +263,18 @@
 
                     <!-- TAB 2: GENEL AYARLAR -->
                     <div id="tab-genel" class="settings-tab-content" style="display: none;">
-                        <div class="settings-card">
+                        <div class="settings-card" style="margin-bottom: 24px;">
                             <h3>Uygulama Ayarları</h3>
                             <p style="color: var(--text-secondary); font-size: 14px;">Genel sistem ayarları buraya eklenecektir.</p>
+                        </div>
+                        
+                        <!-- ÇIKIŞ YAP KARTI -->
+                        <div class="settings-card" style="border-color: var(--accent-danger);">
+                            <h3 style="color: var(--accent-danger);">Hesap Yönetimi</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+                                Bu cihazdan çıkış yaptığınızda, ürün anahtarınız ile başka bir cihazdan giriş yapabilirsiniz.
+                            </p>
+                            <button id="logoutBtn" class="btn btn-danger">Hesaptan Çıkış Yap</button>
                         </div>
                     </div>
 

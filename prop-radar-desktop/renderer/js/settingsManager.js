@@ -1,3 +1,6 @@
+const apiService = require('./apiService');
+const storageService = require('./storageService');
+
 class SettingsManager {
     constructor() {
         this.konutTipleri = ["Daire", "Rezidans", "Müstakil Ev", "Villa", "Çiftlik Evi", "Köşk & Konak", "Yalı", "Yalı Dairesi", "Yazlık", "Kooperatif"];
@@ -5,20 +8,84 @@ class SettingsManager {
         
         this.templates = []; 
         this.currentTemplateId = null;
+        this.provinces = [];
 
         this.initUI();
     }
 
-    initUI() {
+    async initUI() {
+        // Arayüzü hazırla
         this.renderGrid('konutTipleriGrid', 'konutType', this.konutTipleri, 'konutTumu');
         this.renderGrid('isyeriTipleriGrid', 'isyeriType', this.isyeriTipleri, 'isyeriTumu');
-        
         this.initTabs();
         this.initTemplateListeners();
+        
+        // Verileri servislerden çek
+        await this.loadProvincesFromAPI();
         this.loadTemplatesFromStorage();
     }
 
-    // --- SEKME (TAB) SİSTEMİ ---
+    // --- API ENTEGRASYONU ---
+    
+    async loadProvincesFromAPI() {
+        const ilSelect = document.getElementById('setIl');
+        this.provinces = await apiService.getProvinces();
+        
+        if (this.provinces.length === 0) {
+            ilSelect.innerHTML = '<option value="">Bağlantı Hatası!</option>';
+            return;
+        }
+
+        ilSelect.innerHTML = '<option value="">İl Seçiniz...</option>';
+        this.provinces.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.name;
+            opt.dataset.id = p.id;
+            opt.textContent = p.name;
+            ilSelect.appendChild(opt);
+        });
+
+        ilSelect.addEventListener('change', async (e) => {
+            const selectedIndex = e.target.selectedIndex;
+            if (selectedIndex > 0) {
+                const pId = e.target.options[selectedIndex].dataset.id;
+                await this.loadDistrictsFromAPI(pId);
+            } else {
+                const ilceSelect = document.getElementById('setIlce');
+                ilceSelect.innerHTML = '<option value="">Önce İl Seçin</option>';
+                ilceSelect.disabled = true;
+            }
+        });
+    }
+
+    async loadDistrictsFromAPI(provinceId, districtToSelect = null) {
+        const ilceSelect = document.getElementById('setIlce');
+        ilceSelect.innerHTML = '<option value="">İlçeler Yükleniyor...</option>';
+        ilceSelect.disabled = true;
+
+        const districts = await apiService.getDistricts(provinceId);
+
+        if (districts.length === 0) {
+            ilceSelect.innerHTML = '<option value="">Hata!</option>';
+            return;
+        }
+        
+        ilceSelect.innerHTML = '<option value="">İlçe Seçiniz...</option>';
+        districts.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.name;
+            opt.textContent = d.name;
+            ilceSelect.appendChild(opt);
+        });
+        
+        ilceSelect.disabled = false;
+        if (districtToSelect) {
+            ilceSelect.value = districtToSelect;
+        }
+    }
+
+    // --- SEKME (TAB) VE EKRAN RENDER ---
+    
     initTabs() {
         const tabs = document.querySelectorAll('.settings-tab');
         const contents = document.querySelectorAll('.settings-tab-content');
@@ -34,7 +101,6 @@ class SettingsManager {
         });
     }
 
-    // --- CHECKBOX VE GRID RENDER ---
     renderGrid(containerId, groupName, items, selectAllId) {
         const container = document.getElementById(containerId);
         const selectAllCb = document.getElementById(selectAllId);
@@ -66,6 +132,7 @@ class SettingsManager {
     }
 
     // --- ŞABLON (KAYIT ALANI) YÖNETİMİ ---
+    
     initTemplateListeners() {
         document.getElementById('addNewTemplateBtn').addEventListener('click', () => this.createNewTemplate());
         document.getElementById('saveTemplateBtn').addEventListener('click', () => this.saveCurrentTemplate());
@@ -73,12 +140,8 @@ class SettingsManager {
     }
 
     loadTemplatesFromStorage() {
-        const saved = localStorage.getItem('prop_radar_templates');
-        if (saved) {
-            this.templates = JSON.parse(saved);
-        }
+        this.templates = storageService.getTemplates();
         
-        // Eğer hiç kayıt yoksa varsayılan 1 tane oluştur
         if (this.templates.length === 0) {
             this.templates.push(this.getDefaultTemplateObject('Varsayılan Kayıt'));
         }
@@ -86,10 +149,6 @@ class SettingsManager {
         this.currentTemplateId = this.templates[0].id;
         this.renderTemplateList();
         this.populateForm(this.templates[0]);
-    }
-
-    saveToStorage() {
-        localStorage.setItem('prop_radar_templates', JSON.stringify(this.templates));
     }
 
     renderTemplateList() {
@@ -102,7 +161,7 @@ class SettingsManager {
             btn.innerText = t.name;
             btn.addEventListener('click', () => {
                 this.currentTemplateId = t.id;
-                this.renderTemplateList(); // Aktif butonu güncelle
+                this.renderTemplateList(); 
                 this.populateForm(t);
             });
             container.appendChild(btn);
@@ -119,7 +178,6 @@ class SettingsManager {
         };
     }
 
-    // --- ÖZEL İSİM SORMA PENCERESİ (MODAL) KONTROLÜ ---
     showCustomPrompt(defaultText, callback) {
         const overlay = document.getElementById('customPromptOverlay');
         const input = document.getElementById('customPromptInput');
@@ -145,24 +203,21 @@ class SettingsManager {
             }
         };
 
-        cancelBtn.onclick = () => {
-            cleanup();
-        };
+        cancelBtn.onclick = cleanup;
     }
 
-    // --- YENİ ŞABLON OLUŞTURMA ---
     createNewTemplate() {
         this.showCustomPrompt(`Yeni Kayıt ${this.templates.length + 1}`, (templateName) => {
             const newTemplate = this.getDefaultTemplateObject(templateName);
             this.templates.push(newTemplate);
             this.currentTemplateId = newTemplate.id;
-            this.saveToStorage();
+            
+            storageService.saveTemplates(this.templates);
             this.renderTemplateList();
             this.populateForm(newTemplate);
         });
     }
 
-    // --- MEVCUT ŞABLONU KAYDETME ---
     saveCurrentTemplate() {
         const index = this.templates.findIndex(t => t.id === this.currentTemplateId);
         if (index > -1) {
@@ -170,7 +225,7 @@ class SettingsManager {
 
             this.templates[index] = {
                 id: this.currentTemplateId,
-                name: currentName, // İsmi koru
+                name: currentName,
                 il: document.getElementById('setIl').value,
                 ilce: document.getElementById('setIlce').value,
                 minFiyat: document.getElementById('setMinFiyat').value,
@@ -182,28 +237,38 @@ class SettingsManager {
                 isyeriTumu: document.getElementById('isyeriTumu').checked,
                 isyeriType: document.querySelector('input[name="isyeriType"]:checked')?.value || this.isyeriTipleri[0]
             };
-            this.saveToStorage();
-            alert(`"${currentName}" başarıyla kaydedildi!`);
+            
+            storageService.saveTemplates(this.templates);
+            alert(`"${currentName}" başarıyla güncellendi!`);
         }
     }
 
-    // --- ŞABLON SİLME ---
     deleteCurrentTemplate() {
         if (this.templates.length === 1) {
-            return alert("Sistemde en az 1 adet şablon bulunmak zorundadır, silemezsiniz.");
+            return alert("Sistemde en az 1 adet şablon bulunmak zorundadır, son kalan şablonu silemezsiniz.");
         }
 
         if (confirm("Bu kayıtlı şablonu silmek istediğinize emin misiniz?")) {
             this.templates = this.templates.filter(t => t.id !== this.currentTemplateId);
-            this.saveToStorage();
-            this.loadTemplatesFromStorage(); // Baştan yükle (Eğer 0 kalırsa otomatik 1 tane açar)
+            storageService.saveTemplates(this.templates);
+            this.loadTemplatesFromStorage(); 
         }
     }
 
-    // --- FORMU VERİLERLE DOLDURMA ---
-    populateForm(t) {
-        document.getElementById('setIl').value = t.il;
-        document.getElementById('setIlce').value = t.ilce;
+    async populateForm(t) {
+        const ilSelect = document.getElementById('setIl');
+        const ilceSelect = document.getElementById('setIlce');
+        
+        ilSelect.value = t.il || '';
+
+        if (t.il && ilSelect.selectedIndex > 0) {
+            const pId = ilSelect.options[ilSelect.selectedIndex].dataset.id;
+            await this.loadDistrictsFromAPI(pId, t.ilce);
+        } else {
+            ilceSelect.innerHTML = '<option value="">Önce İl Seçin</option>';
+            ilceSelect.disabled = true;
+        }
+
         document.getElementById('setMinFiyat').value = t.minFiyat;
         document.getElementById('setMaxFiyat').value = t.maxFiyat;
         document.getElementById('setMinM2').value = t.minM2;
@@ -215,12 +280,10 @@ class SettingsManager {
         document.getElementById('isyeriTumu').checked = t.isyeriTumu;
         document.querySelectorAll('input[name="isyeriType"]').forEach(r => { if (r.value === t.isyeriType) r.checked = true; });
 
-        // Arayüzü tetikleyerek disable (kilitlenme) durumlarını güncelle
         document.getElementById('konutTumu').dispatchEvent(new Event('change'));
         document.getElementById('isyeriTumu').dispatchEvent(new Event('change'));
     }
 
-    // Ana ekran URL oluşturucusu bu metodu çağırıyor
     getPreferences() {
         const isKonutAll = document.getElementById('konutTumu').checked;
         const isIsyeriAll = document.getElementById('isyeriTumu').checked;
@@ -237,4 +300,5 @@ class SettingsManager {
         };
     }
 }
+
 module.exports = SettingsManager;
